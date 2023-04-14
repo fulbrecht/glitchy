@@ -5,23 +5,10 @@
     "version": "1.0",
     "content_scripts": [
         {
-          "js": ["scripts/content.js"],
-          "matches": [
-            "https://www.facebook.com/*"
-          ]
+          "matches": ["<all_urls>"],
+          "js": ["scripts/content.js"]
         }
-      ],
-    "icons": {
-        "16": "images/ks_icon_16.png",
-        "128": "images/ks_icon_128.png"
-    },
-    "action": {
-        "default_popup": "popup/popup.html",
-        "default_icon": "images/ks_icon_16.png"
-    },
-    "background": {
-        "service_worker": "background.js"
-    }
+    ]
 
   }
   
