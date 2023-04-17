@@ -1,6 +1,11 @@
 addMutationObserver()
 let glitchCount = 0
-let message = ''
+let glitchNode
+let message
+chrome.storage.local.get(['message']).then((result) => {
+    console.log('Value currently is ' + result.key)
+    message = result.message
+})
 
 const style = document.createElement('style')
 
@@ -30,8 +35,7 @@ function addMutationObserver() {
                 
                 const randomIndex = Math.floor(Math.random() * visibleElements.length)
                 const randomElement = visibleElements[randomIndex]
-                console.log(randomElement)
-                randomElement.setAttribute('id', 'glitch')
+                glitchNode = randomElement
                 glitch(randomElement)
             }
         })
@@ -58,18 +62,25 @@ function glitch(node) {
 }
 
 function handleMouseenter(){
-    const e = document.getElementById('glitch')
+    const e = glitchNode
     e.innerHTML = ''
     e.style.backgroundColor = 'red'
     if(message){
         e.textContent = message
     } else {
-        e.textContent = 'hello'
+        e.textContent = 'click me'
     }
 }
 
 function handleClick(){
-    message = prompt('Send a message to your future self')
+    newMessage = prompt('Send a message to your future self')
+    chrome.storage.local.set({'message': newMessage}).then(() => {
+        console.log('Value is set to ' + newMessage)
+        chrome.storage.local.get('message').then((result) => {
+            console.log('Value currently is ' + result.message)
+            message = result.key
+        })
+    })
 
 }
 

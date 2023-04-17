@@ -8,7 +8,12 @@
           "matches": ["<all_urls>"],
           "js": ["scripts/content.js"]
         }
-    ]
-
+    ],
+    "permissions": [
+        "storage"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    }
   }
   
