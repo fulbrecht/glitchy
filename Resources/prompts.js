@@ -22,11 +22,7 @@ const prompts = [
     {
         question: "What time do you need to be up tomorrow?",
         response: ""
-    }
+    },
+
+
 ]
-
-chrome.runtime.onMessage.addListener(receiver);
-
-function receiver(message, sender,sendResponse) {
-    sendResponse({prompts})
-}
