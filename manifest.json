@@ -6,7 +6,8 @@
     "content_scripts": [
         {
           "matches": ["<all_urls>"],
-          "js": ["scripts/content.js"]
+          "js": ["scripts/content.js"],
+          "css": ["css/style.css"]
         }
     ],
     "permissions": [

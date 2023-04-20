@@ -1,28 +1,14 @@
 
 let prompts = []
-fetchPrompts()
+fetchPrompts().then((response) =>{
+    prompts = response
+})
+
 let promptIndex = 0
 let glitchCount = 0
-let glitchNode
-let oldHTML
-let oldStyle
-let message
-
+let glitchDiv
 
 addMutationObserver()
-
-
-
-//blinking animation for glitch
-const style = document.createElement('style')
-style.innerHTML = `
-    @keyframes blinking {
-    0% { opacity: 1; }
-    50% { opacity: 0.1; }
-    100% { opacity: 1; }
-    }
-    `
-document.head.appendChild(style);
 
 //watch for mutations and pick random element to 'glitch'
 function addMutationObserver() {
@@ -33,7 +19,6 @@ function addMutationObserver() {
                 const visibleElements = getVisibleElements(elements);
                 const randomIndex = getRandomIndex(0, visibleElements.length)
                 const randomElement = visibleElements[randomIndex]
-                glitchNode = randomElement
                 promptIndex = getRandomIndex(0,prompts.length)
                 glitch(randomElement)
             }
@@ -43,57 +28,33 @@ function addMutationObserver() {
 }
 
 //apply the glitch
-function glitch(node) {
-    const rect = node.getBoundingClientRect();
-    console.log(rect)
+function glitch(e) {
+
+    glitchDiv = addGlitchDiv(e)
+    console.log(glitchDiv)
+    
+    console.log("Glitch inserted")
+    glitchCount = 1
+    
+}
+
+function addGlitchDiv(e){
+    const rect = e.getBoundingClientRect();
     const div = document.createElement("div")
-    div.id = "glitch"
-    div.style.backgroundColor = "blue"
-    div.textContent = "test"
-    div.style.position = "absolute"
-    div.style.zIndex = 7
+    div.classList.add("glitch")
     div.style.top = `${rect.top + window.scrollY}px`
     div.style.left = `${rect.left + window.scrollX}px`
     div.style.width = `${rect.width}px`
     div.style.height = `${rect.height}px`
+    div.addEventListener('mouseleave', handleMouseleave)
+    div.addEventListener('click', handleClick)
     document.body.appendChild(div)
-    
-    console.log(div)
-
-
-    
-    
-    oldHTML = node.innerHTML
-    oldStyle  = node.style
-    node.style.backgroundColor = 'green'
-    node.style.animation = 'blinking 1s infinite'
-    node.addEventListener('mouseenter', handleMouseenter)
-    node.addEventListener('mouseleave', handleMouseleave);
-    node.addEventListener('click', handleClick)
-
-    console.log("Glitch inserted")
-    glitchCount = 1
-
-}
-
-//hover effect
-function handleMouseenter(){
-    const e = glitchNode
-    e.innerHTML = ''
-    e.style.backgroundColor = 'red'
-    if(message){
-        e.textContent = message
-    } else {
-        e.textContent = 'click me'
-    }
+    return div
 }
 
 function handleMouseleave(){
-    const e = glitchNode
-    e.style = oldStyle
-    e.innerHTML = oldHTML
-    //node.removeEventListener('mouseenter', handleMouseenter)
-    //node.removeEventListener('click', handleClick)
+    const e = glitchDiv
+    e.remove()
 }
 
 function handleClick(){
@@ -109,7 +70,8 @@ function handleClick(){
 // Helper functions
 async function fetchPrompts(){
     const response = await chrome.runtime.sendMessage({})
-    prompts = response.prompts;
+    console.log(response)
+    return response.prompts
 }
 
 function getVisibleElements(elements){

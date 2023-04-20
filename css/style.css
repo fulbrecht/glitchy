@@ -1,0 +1,48 @@
+.glitch {
+    background-color:green;
+    animation: blinking 1s infinite;
+    position: absolute;
+    z-index: 7;
+}
+
+.glitch:hover {
+    background-color: red;
+    animation: none;
+    text-align: center;
+}
+
+.glitch:hover::before {
+    content: "click me";
+}
+
+/* blinking animation for glitch */
+@keyframes blinking {
+    0% { opacity: 1; }
+    50% { opacity: 0.1; }
+    100% { opacity: 1; }
+}
+
+.gg-pill,
+.gg-pill::after {
+    display: block;
+    box-sizing: border-box;
+    width: 12px
+}
+.gg-pill {
+    border-top-left-radius: 140px;
+    border-top-right-radius: 140px;
+    border: 2px solid;
+    transform: rotate(45deg) scale(var(--ggs,1));
+    position: relative;
+    height: 14px
+}
+.gg-pill::after {
+    content: "";
+    position: absolute;
+    height: 12px;
+    background: currentColor;
+    left: -2px;
+    bottom: -12px;
+    border-bottom-left-radius: 140px;
+    border-bottom-right-radius: 140px
+}
