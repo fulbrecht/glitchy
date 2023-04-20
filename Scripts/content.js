@@ -1,4 +1,4 @@
-addMutationObserver()
+
 let prompts = []
 fetchPrompts()
 let promptIndex = 0
@@ -7,6 +7,9 @@ let glitchNode
 let oldHTML
 let oldStyle
 let message
+
+
+addMutationObserver()
 
 
 
@@ -19,7 +22,6 @@ style.innerHTML = `
     100% { opacity: 1; }
     }
     `
-    
 document.head.appendChild(style);
 
 //watch for mutations and pick random element to 'glitch'
@@ -42,6 +44,25 @@ function addMutationObserver() {
 
 //apply the glitch
 function glitch(node) {
+    const rect = node.getBoundingClientRect();
+    console.log(rect)
+    const div = document.createElement("div")
+    div.id = "glitch"
+    div.style.backgroundColor = "blue"
+    div.textContent = "test"
+    div.style.position = "absolute"
+    div.style.zIndex = 7
+    div.style.top = `${rect.top + window.scrollY}px`
+    div.style.left = `${rect.left + window.scrollX}px`
+    div.style.width = `${rect.width}px`
+    div.style.height = `${rect.height}px`
+    document.body.appendChild(div)
+    
+    console.log(div)
+
+
+    
+    
     oldHTML = node.innerHTML
     oldStyle  = node.style
     node.style.backgroundColor = 'green'
