@@ -32,7 +32,7 @@ function addMutationObserver() {
 
 //apply the glitch
 function glitch(elements) {
-    const randomIndex = getRandomIndex(0, elements.length)
+    const randomIndex = getRandomIndex(0, elements.length - 1)
     const e = elements[randomIndex]
 
     promptIndex = getRandomIndex(0,Object.keys(prompts).length - 1)
