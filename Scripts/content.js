@@ -1,7 +1,13 @@
+let username = ""
+let prompts = {
+    "Ask a question to your future self":""
+}
 
-let prompts = []
+fetchName().then((response) => {
+    username = response
+})
 fetchPrompts().then((response) =>{
-    prompts = response
+    prompts = {...prompts, ...response}
 })
 
 let promptIndex = 0
@@ -17,10 +23,7 @@ function addMutationObserver() {
             if(glitchCount === 0 ){
                 const elements = mutation.target.getElementsByTagName('*');
                 const visibleElements = getVisibleElements(elements);
-                const randomIndex = getRandomIndex(0, visibleElements.length)
-                const randomElement = visibleElements[randomIndex]
-                promptIndex = getRandomIndex(0,prompts.length)
-                glitch(randomElement)
+                glitch(visibleElements)
             }
         })
     })
@@ -28,8 +31,14 @@ function addMutationObserver() {
 }
 
 //apply the glitch
-function glitch(e) {
+function glitch(elements) {
+    const randomIndex = getRandomIndex(0, elements.length)
+    const e = elements[randomIndex]
 
+    promptIndex = getRandomIndex(0,Object.keys(prompts).length - 1)
+    console.log(promptIndex)
+    console.log(prompts)
+    
     glitchDiv = addGlitchDiv(e)
     console.log(glitchDiv)
     
@@ -46,30 +55,59 @@ function addGlitchDiv(e){
     div.style.left = `${rect.left + window.scrollX}px`
     div.style.width = `${rect.width}px`
     div.style.height = `${rect.height}px`
+    div.style.fontSize = `${rect.height / 1.2}px`
     div.addEventListener('mouseleave', handleMouseleave)
     div.addEventListener('click', handleClick)
     document.body.appendChild(div)
+
+    const span = document.createElement("span")
+    if(username){
+        span.textContent = `Hello ${username}`
+    } else {
+        span.textContent = "Click Me"
+    }
+
+    div.appendChild(span)
+
     return div
 }
 
 function handleMouseleave(){
     const e = glitchDiv
     e.remove()
+    glitchCount = 0
 }
 
 function handleClick(){
 
-    prompts[promptIndex].response = prompt(prompts[promptIndex].question)
+    const promptKey = Object.keys(prompts)[promptIndex]
+
+    if(!username){
+        username = prompt("What is your name?")
+        chrome.storage.local.set({username})
+    } else if(promptKey === "Ask a question to your future self"){
+        const newPrompt = prompt(promptKey)
+        prompts[newPrompt] = ""
+    } else {
+        prompts[promptKey] = prompt(promptKey)
+    }
+
     chrome.storage.local.set({prompts}).then(() => {
-        console.log('Response to "'+ prompts[promptIndex].question + '" is "' + prompts[promptIndex].response + '".')
+        console.log('Response to "'+ promptKey + '" is "' + prompts[promptKey] + '".')
     })
 
 }
 
 
 // Helper functions
+async function fetchName(){
+    const response = await chrome.storage.local.get(["username"])
+    return response.username
+}
+
 async function fetchPrompts(){
-    const response = await chrome.runtime.sendMessage({})
+    // const response = await chrome.runtime.sendMessage({})
+    const response = await chrome.storage.local.get(["prompts"])
     console.log(response)
     return response.prompts
 }
@@ -78,7 +116,7 @@ function getVisibleElements(elements){
     let visibleElements = []
     for (let i = 0; i < elements.length; i++) {
         const element = elements[i]
-        if (isVisible(element) && hasText(element)) {
+        if (isVisible(element)) {
             visibleElements.push(element)
         }
     }
@@ -87,13 +125,6 @@ function getVisibleElements(elements){
 
 function isVisible(e){
     if (e.offsetHeight > 0 && e.offsetWidth > 0){
-        return true
-    }
-    return false
-}
-
-function hasText(e){
-    if (e.textContent){
         return true
     }
     return false

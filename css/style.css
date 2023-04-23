@@ -3,16 +3,24 @@
     animation: blinking 1s infinite;
     position: absolute;
     z-index: 7;
+    border-radius: 2px;
+    display: table;
+}
+
+.glitch span {
+    display: none;
+
 }
 
 .glitch:hover {
-    background-color: red;
     animation: none;
-    text-align: center;
 }
 
-.glitch:hover::before {
-    content: "click me";
+.glitch:hover span{
+    background-color: red;
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
 }
 
 /* blinking animation for glitch */
