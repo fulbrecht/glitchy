@@ -62,7 +62,7 @@ function addGlitchDiv(e){
 
     const span = document.createElement("span")
     if(username){
-        span.textContent = `Hello ${username}`
+        span.textContent = `Hi ${username}`
     } else {
         span.textContent = "Click Me"
     }
@@ -87,9 +87,18 @@ function handleClick(){
         chrome.storage.local.set({username})
     } else if(promptKey === "Ask a question to your future self"){
         const newPrompt = prompt(promptKey)
-        prompts[newPrompt] = ""
+        if(newPrompt){
+            prompts[newPrompt] = ""
+        }
+    } else if(prompts[promptKey]){
+        const confirmation = confirm(`Would you like to change your answer to "${promptKey}" from "${prompts[promptKey]}"?`)
+        if(confirmation){
+            prompts[promptKey] = prompt(promptKey)
+        }
+        
     } else {
         prompts[promptKey] = prompt(promptKey)
+        
     }
 
     chrome.storage.local.set({prompts}).then(() => {
