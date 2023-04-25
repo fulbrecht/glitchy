@@ -1,3 +1,5 @@
+import { test } from "./test"
+
 let username = ""
 let promptIndex = 0
 let glitchCount = 0
@@ -10,12 +12,11 @@ interface Prompt {
 const defaultPrompt: Prompt = {
     message: "Ask a question to your future self",
     response: "" 
-} 
-
+}
 
 type Prompts = Array<Prompt>
 
-let glitchPrompts: Prompt[] = []
+let glitchPrompts: Prompts = []
 glitchPrompts.push(defaultPrompt)
 
 fetchName().then((response) => {
@@ -25,7 +26,7 @@ fetchName().then((response) => {
 fetchPrompts().then((response) =>{
     if(response){
         glitchPrompts.push(...response.slice(1))
-        console.log("fetch prompts completed and merged")
+        test()
     }
     glitch()
 })
@@ -57,8 +58,8 @@ function glitch() {
         const randomElement = visibleElements[randomIndex]
 
         promptIndex = getRandomIndex(0, glitchPrompts.length - 1)
-        console.log(promptIndex, "index")
-        console.log(glitchPrompts.length)
+        // console.log(promptIndex, "index")
+        // console.log(glitchPrompts.length)
         console.log(glitchPrompts)
         
         glitchDiv = addGlitchDiv(randomElement)
@@ -74,15 +75,28 @@ function addGlitchDiv(e){
     const rect = e.getBoundingClientRect();
     const div = document.createElement("div")
     div.classList.add("glitch")
+    
     div.style.top = `${rect.top + window.scrollY}px`
     div.style.left = `${rect.left + window.scrollX}px`
+    // div.style.left = `${e.offsetLeft}px`
+    // div.style.top = `${e.offsetTop}px`
+    // div.style.left = `0px`
+    // div.style.top = `0px`
     div.style.width = `${rect.width}px`
     div.style.height = `${rect.height}px`
-    div.style.fontSize = `${rect.height / 1.2}px`
+    if(isFixed(e)){
+        div.style.position = "fixed"
+    } else if(isSticky(e)){
+        div.style.position = "sticky"
+    } else {
+        div.style.position = "absolute"
+    }
+    // e.style.backgroundColor = "purple"
+    //div.style.fontSize = `${rect.height / 1.2}px`
     div.addEventListener('mouseleave', handleMouseleave)
     div.addEventListener('click', handleClick)
     document.body.appendChild(div)
-    // e.appendChild(div)
+    // e.parentElement.appendChild(div)
 
     const span = document.createElement("span")
     if(username){
@@ -167,6 +181,34 @@ function isVisible(e){
         return true
     }
     return false
+}
+
+function isFixed(e) {
+    let parent = e.parentElement;
+
+    while (parent) {
+        const ePosition = window.getComputedStyle(parent).position
+        if ( ePosition === 'fixed') {
+            return true;
+        }
+        parent = parent.parentElement;
+    }
+
+    return false;
+}
+
+function isSticky(e) {
+    let parent = e.parentElement;
+
+    while (parent) {
+        const ePosition = window.getComputedStyle(parent).position
+        if (ePosition === 'sticky') {
+            return true;
+        }
+        parent = parent.parentElement;
+    }
+
+    return false;
 }
 
 function isUserInput(node) {
